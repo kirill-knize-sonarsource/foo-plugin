@@ -28,6 +28,7 @@ import static java.util.Arrays.asList;
 public class FooLanguageProperties {
 
   public static final String FILE_SUFFIXES_KEY = "sonar.foo.file.suffixes";
+  public static final String TOKEN_KEY = "sonar.foo.token";
   public static final String FILE_SUFFIXES_DEFAULT_VALUE = ".foo";
 
   private FooLanguageProperties() {

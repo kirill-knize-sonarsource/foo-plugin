@@ -19,6 +19,7 @@
  */
 package org.sonarsource.plugins.example;
 
+import com.sun.tools.javac.util.List;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonarsource.plugins.example.hooks.PostJobInScanner;
@@ -71,12 +72,20 @@ public class ExamplePlugin implements Plugin {
     // tutorial on web extensions
     context.addExtension(MyPluginPageDefinition.class);
 
-    context.addExtensions(asList(
-      PropertyDefinition.builder("sonar.foo.file.suffixes")
-        .name("Suffixes FooLint")
-        .description("Suffixes supported by FooLint")
-        .category("FooLint")
-        .defaultValue("")
-        .build()));
+    PropertyDefinition propertySuffixes = PropertyDefinition.builder("sonar.foo.file.suffixes")
+            .name("Suffixes FooLint")
+            .description("Suffixes supported by FooLint")
+            .category("FooLint")
+            .defaultValue("")
+            .build();
+
+    PropertyDefinition propertyToken = PropertyDefinition.builder("sonar.foo.token")
+            .name("Token FooLint")
+            .description("Token supported by FooLint")
+            .category("FooLint")
+            .defaultValue("FOO")
+            .build();
+
+    context.addExtensions(List.of(propertySuffixes, propertyToken));
   }
 }
