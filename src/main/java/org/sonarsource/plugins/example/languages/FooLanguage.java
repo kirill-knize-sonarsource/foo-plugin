@@ -20,8 +20,11 @@
 package org.sonarsource.plugins.example.languages;
 
 import org.sonar.api.config.Configuration;
+import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.AbstractLanguage;
 import org.sonarsource.plugins.example.settings.FooLanguageProperties;
+
+import java.util.Optional;
 
 /**
  * This class defines the fictive Foo language.
@@ -40,7 +43,21 @@ public final class FooLanguage extends AbstractLanguage {
 
   @Override
   public String[] getFileSuffixes() {
-    return config.getStringArray(FooLanguageProperties.FILE_SUFFIXES_KEY);
-  }
+        Optional<PropertyDefinition> optionalPropertyDefinition = FooLanguageProperties.getProperties().stream().filter(it -> it.key().equals(FooLanguageProperties.FILE_SUFFIXES_KEY)).findFirst();
+        String defaultSuffix = optionalPropertyDefinition.map(PropertyDefinition::defaultValue).orElse(null);
+        String[] defaultSuffixes = {defaultSuffix};
+        String[] configSuffixes = config.getStringArray(FooLanguageProperties.FILE_SUFFIXES_KEY);
+        if (nullOrEmpty(defaultSuffixes)) {
+            // TODO i want to throw exception here since it's bad already we don't have default settings of active language
+            return new String[]{};
+        }
+        if (nullOrEmpty(configSuffixes))
+            configSuffixes = defaultSuffixes;
 
+        return configSuffixes;
+     }
+
+    <T> boolean nullOrEmpty(T[] ar) {
+        return ar == null || ar.length == 0;
+    }
 }

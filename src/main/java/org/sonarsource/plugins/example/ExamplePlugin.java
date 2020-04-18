@@ -19,27 +19,23 @@
  */
 package org.sonarsource.plugins.example;
 
-import com.sun.tools.javac.util.List;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
-import org.sonarsource.plugins.example.hooks.PostJobInScanner;
 import org.sonarsource.plugins.example.hooks.DisplayQualityGateStatus;
+import org.sonarsource.plugins.example.hooks.PostJobInScanner;
 import org.sonarsource.plugins.example.languages.FooLanguage;
 import org.sonarsource.plugins.example.languages.FooQualityProfile;
 import org.sonarsource.plugins.example.measures.ComputeSizeAverage;
 import org.sonarsource.plugins.example.measures.ComputeSizeRating;
 import org.sonarsource.plugins.example.measures.ExampleMetrics;
 import org.sonarsource.plugins.example.measures.SetSizeOnFilesSensor;
-import org.sonarsource.plugins.example.rules.CreateIssuesOnJavaFilesSensor;
-import org.sonarsource.plugins.example.rules.FooLintIssuesLoaderSensor;
-import org.sonarsource.plugins.example.rules.FooLintRulesDefinition;
-import org.sonarsource.plugins.example.rules.JavaRulesDefinition;
+import org.sonarsource.plugins.example.rules.*;
 import org.sonarsource.plugins.example.settings.FooLanguageProperties;
 import org.sonarsource.plugins.example.settings.HelloWorldProperties;
 import org.sonarsource.plugins.example.settings.SayHelloFromScanner;
 import org.sonarsource.plugins.example.web.MyPluginPageDefinition;
 
-import static java.util.Arrays.asList;
+import java.util.ArrayList;
 
 /**
  * This class is the entry point for all extensions. It is referenced in pom.xml.
@@ -63,6 +59,7 @@ public class ExamplePlugin implements Plugin {
     // tutorial on rules
     context.addExtensions(JavaRulesDefinition.class, CreateIssuesOnJavaFilesSensor.class);
     context.addExtensions(FooLintRulesDefinition.class, FooLintIssuesLoaderSensor.class);
+    context.addExtensions(MyFooRuleDefinition.class, MyFooSensor.class);
 
     // tutorial on settings
     context
@@ -85,7 +82,9 @@ public class ExamplePlugin implements Plugin {
             .category("FooLint")
             .defaultValue("FOO")
             .build();
-
-    context.addExtensions(List.of(propertySuffixes, propertyToken));
+    ArrayList<PropertyDefinition> propertyDefinitions = new ArrayList<>();
+    propertyDefinitions.add(propertySuffixes);
+    propertyDefinitions.add(propertyToken);
+    context.addExtensions(propertyDefinitions);
   }
 }

@@ -19,31 +19,46 @@
  */
 package org.sonarsource.plugins.example.settings;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 
-import static java.util.Arrays.asList;
 
 public class FooLanguageProperties {
 
   public static final String FILE_SUFFIXES_KEY = "sonar.foo.file.suffixes";
-  public static final String TOKEN_KEY = "sonar.foo.token";
   public static final String FILE_SUFFIXES_DEFAULT_VALUE = ".foo";
+
+  public static final String TOKEN_KEY = "sonar.foo.token";
+  public static final String TOKEN_KEY_DEFAULT_VALUE = "FOO";
+
 
   private FooLanguageProperties() {
     // only statics
   }
 
   public static List<PropertyDefinition> getProperties() {
-    return asList(PropertyDefinition.builder(FILE_SUFFIXES_KEY)
-      .multiValues(true)
-      .defaultValue(FILE_SUFFIXES_DEFAULT_VALUE)
-      .category("Foo")
-      .name("File Suffixes")
-      .description("Comma-separated list of suffixes for files to analyze.")
-      .onQualifiers(Qualifiers.PROJECT)
-      .build());
+    PropertyDefinition suffixes = PropertyDefinition.builder(FILE_SUFFIXES_KEY)
+            .multiValues(true)
+            .defaultValue(FILE_SUFFIXES_DEFAULT_VALUE)
+            .category("Foo")
+            .name("File Suffixes")
+            .description("Comma-separated list of suffixes for files to analyze.")
+            .onQualifiers(Qualifiers.PROJECT)
+            .build();
+    PropertyDefinition token = PropertyDefinition.builder(TOKEN_KEY)
+            .multiValues(false)
+            .defaultValue(TOKEN_KEY_DEFAULT_VALUE)
+            .category("Foo")
+            .name("File Suffixes")
+            .description("Token for files to analyze.")
+            .onQualifiers(Qualifiers.PROJECT)
+            .build();
+    ArrayList<PropertyDefinition> propertyDefinitions = new ArrayList<>();
+    propertyDefinitions.add(suffixes);
+    propertyDefinitions.add(token);
+    return  propertyDefinitions;
   }
 
 }

@@ -20,6 +20,9 @@
 package org.sonarsource.plugins.example.languages;
 
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonarsource.plugins.example.rules.MyFooRuleDefinition;
 
 import static org.sonarsource.plugins.example.rules.FooLintRulesDefinition.REPO_KEY;
 
@@ -27,6 +30,8 @@ import static org.sonarsource.plugins.example.rules.FooLintRulesDefinition.REPO_
  * Default, BuiltIn Quality Profile for the projects having files of the language "foo"
  */
 public final class FooQualityProfile implements BuiltInQualityProfilesDefinition {
+
+  private static final Logger LOGGER = Loggers.get(FooQualityProfile.class);
 
   @Override
   public void define(Context context) {
@@ -40,6 +45,8 @@ public final class FooQualityProfile implements BuiltInQualityProfilesDefinition
     NewBuiltInActiveRule rule3 = profile.activateRule(REPO_KEY, "ExampleRule3");
     rule3.overrideSeverity("CRITICAL");
 
+    LOGGER.info("RULE ACTIVATION...");
+    profile.activateRule(MyFooRuleDefinition.REPOSITORY, "foo");
     profile.done();
   }
 
