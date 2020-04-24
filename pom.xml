@@ -57,6 +57,7 @@
         <configuration>
           <pluginKey>example</pluginKey>
           <pluginClass>org.sonarsource.plugins.example.ExamplePlugin</pluginClass>
+          <sonarLintSupported>true</sonarLintSupported>
         </configuration>
       </plugin>
       <plugin>
