@@ -26,11 +26,13 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
  * Generates issues on all java files at line 1. This rule
  * must be activated in the Quality profile.
  */
+@SonarLintSide
 public class CreateIssuesOnJavaFilesSensor implements Sensor {
 
   private static final double ARBITRARY_GAP = 2.0;

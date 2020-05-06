@@ -35,6 +35,7 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.plugins.example.languages.FooLanguage;
 
 /**
@@ -42,6 +43,7 @@ import org.sonarsource.plugins.example.languages.FooLanguage;
  * Results are provided as an xml file and are corresponding to the rules defined in 'rules.xml'.
  * To be very abstract, these rules are applied on source files made with the fictive language Foo.
  */
+@SonarLintSide
 public class FooLintIssuesLoaderSensor implements Sensor {
 
   private static final Logger LOGGER = Loggers.get(FooLintIssuesLoaderSensor.class);

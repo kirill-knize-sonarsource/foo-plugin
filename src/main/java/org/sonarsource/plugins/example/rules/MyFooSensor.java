@@ -1,5 +1,11 @@
 package org.sonarsource.plugins.example.rules;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
@@ -12,15 +18,11 @@ import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.plugins.example.languages.FooLanguage;
 import org.sonarsource.plugins.example.settings.FooLanguageProperties;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Optional;
-
+@SonarLintSide
 public class MyFooSensor implements Sensor {
 
     private static final Logger LOGGER = Loggers.get(MyFooSensor.class);
@@ -53,32 +55,48 @@ public class MyFooSensor implements Sensor {
                 String line;
                 int lineCounter = 1;
                 while ((line = bufferedReader.readLine()) != null) {
+                    LOGGER.info("Line: \"" + line + "\".");
                     if (line.contains(token)) {
-                        int tokenLength = token.length();
-                        int startAt = line.indexOf(token);
-                        int endsAt = startAt + tokenLength;
-                        DefaultTextPointer startAtPointer = new DefaultTextPointer(lineCounter, startAt);
-                        DefaultTextPointer endsAtPointer = new DefaultTextPointer(lineCounter, endsAt);
-                        DefaultTextRange textRange = new DefaultTextRange(startAtPointer, endsAtPointer);
+                        List<DefaultTextRange> textRanges = getTextRange(token, line, lineCounter);
+                        for (DefaultTextRange textRange : textRanges) {
+                            NewIssue newIssue = context.newIssue()
+                              .forRule(MyFooRuleDefinition.FOO_RULE)
 
-                        NewIssue newIssue = context.newIssue()
-                                .forRule(MyFooRuleDefinition.FOO_RULE)
+                              // gap is used to estimate the remediation cost to fix the debt
+                              .gap(ARBITRARY_GAP);
 
-                                // gap is used to estimate the remediation cost to fix the debt
-                                .gap(ARBITRARY_GAP);
-
-                        NewIssueLocation location = newIssue.newLocation()
-                                .on(fooFile)
-                                .at(textRange)
-                                .message("Foo token here!");
-                        newIssue.at(location);
-                        newIssue.save();
-                        lineCounter++;
+                            NewIssueLocation location = newIssue.newLocation()
+                              .on(fooFile)
+                              .at(textRange)
+                              .message("Foo token here!");
+                            newIssue.at(location);
+                            newIssue.save();
+                        }
                     }
+                    lineCounter++;
                 }
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
         }
+    }
+
+    private List<DefaultTextRange> getTextRange(String token, String line, int lineCounter) {
+        List<DefaultTextRange> textRanges = new ArrayList<>();
+        int fromIndex = 0;
+        int tokenLength = token.length();
+        int startsAt = line.indexOf(token);
+        while (startsAt >= 0) {
+            int endsAt = startsAt + tokenLength;
+            DefaultTextPointer startAtPointer = new DefaultTextPointer(lineCounter, startsAt);
+            DefaultTextPointer endsAtPointer = new DefaultTextPointer(lineCounter, endsAt);
+            DefaultTextRange textRange = new DefaultTextRange(startAtPointer, endsAtPointer);
+            LOGGER.info("Start at line: " + lineCounter + ", position: " + startsAt);
+            LOGGER.info("Ends at line: " + lineCounter + ", position: " + endsAt);
+            textRanges.add(textRange);
+            fromIndex = endsAt;
+            startsAt = line.indexOf(token, fromIndex);
+        }
+        return textRanges;
     }
 }

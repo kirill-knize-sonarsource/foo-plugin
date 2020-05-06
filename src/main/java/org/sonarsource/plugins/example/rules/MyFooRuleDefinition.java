@@ -4,7 +4,9 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
+@SonarLintSide
 public class MyFooRuleDefinition implements RulesDefinition {
 
     public static final String REPOSITORY = "foo-example";
